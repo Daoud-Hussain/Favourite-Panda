@@ -3,13 +3,13 @@ using namespace std;
 
 struct OrderList
 {
-    string name;                    // Variable to store customer name
-    string address;                 // Variable to store customer address
-    string phone;                   // Variable to store customer phone number
-    string email;                   // Variable to store customer email
-    string cuisine;                 // Variable to store order cuisine
-    string *orders = new string[5]; // Variable to store orders
-    int *orderTime = new int[5];    // Variable to store orders required time
+    string name;                         // Variable to store customer name
+    string address;                      // Variable to store customer address
+    string phone;                        // Variable to store customer phone number
+    string email;                        // Variable to store customer email
+    string cuisine;                      // Variable to store order cuisine
+    string *orders = new string[5];      // Array to store orders
+    int *orderTime = new int[5];         // Array to store orders required time
     OrderList* next;
 };
 OrderList* first;
@@ -24,6 +24,7 @@ void askForOrder()
         bool flag = true;
         OrderList *newOrder = new OrderList();
         // Customer credentials
+        cout<<endl;
         cout << "*********** Ask for Order ***********" << endl;
         cout << "Enter the customer name: "
             << " ";
@@ -355,6 +356,7 @@ void askForOrder()
     }
 
     else {
+        cout<<endl;
         int choice, option;
         bool flag = true;
         OrderList *newOrder = new OrderList();
@@ -687,6 +689,10 @@ void askForOrder()
 //Delivering orders of customers
 void deliverOrders(){
     OrderList* temp = first;
+        if(temp == NULL){
+            cout<<"No order placed!!! Place first!!"<<endl;
+        }
+
     while(temp != NULL){
         cout<<"---------- Your Orders ---------------"<<endl;
         cout<<"--------------------------------------"<<endl;
@@ -702,12 +708,35 @@ void deliverOrders(){
         
         temp = temp->next;
     }
+    cout<<endl<<endl;
 }
 
 int main()
 {   
-    
+    bool flag = true;
+    while (flag){
+        int option;
+        cout << "*********** Favourite Panda ***********" << endl;
+        cout << "Enter 1 to order food: "<<endl;
+        cout << "Enter 2 to deliver food: "<<endl;
+        cout << "Enter 3 to exit: "<<endl;
+        cout<<"*****************************************"<<endl;
 
-    askForOrder();
-    deliverOrders();
+        cout << "Enter your choice: ";
+        cin>>option;
+
+        if(option == 1){
+            askForOrder();
+        }
+        else if(option == 2){
+            deliverOrders();
+        }
+        else if(option == 2){
+            flag = false;
+        }
+        else{
+            cout<<"Invalid Input!!"<<endl;
+        }
+    }
+
 }
