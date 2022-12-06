@@ -712,11 +712,8 @@ void askForOrder()
 //Delivering orders of customers
 void deliverOrders(){
     OrderList* temp = first;
-        if(temp == NULL){
-            cout<<"No order placed!!! Place first!!"<<endl;
-        }
 
-    while(temp != NULL){
+    if(temp != NULL){
         cout<<"-------------- Your Orders -------------------"<<endl;
         cout<<"----------------------------------------------"<<endl;
         cout<<"Customer Name:          "<<temp->name<<endl;
@@ -730,10 +727,15 @@ void deliverOrders(){
                 cout<<temp->orders[i]<<", ";
             }
         }
-
         cout<<endl<<"----------------------------------------------"<<endl;
-
-        //Deleting the delivered order from order list
+        //Deleting the delivered order from order list (Deleting Node From Start)
+        OrderList* deleted = first;
+        first = first->next;
+        deleted->next = NULL;
+        delete deleted;
+    }
+    else{
+        cout<<"No order placed!!! Place first!!"<<endl;
     }
 
     cout<<endl<<endl;
