@@ -3,6 +3,11 @@
 #include<vector>
 using namespace std;
 
+int alternatePaths=2;
+// string shortestPath;
+vector<vector<int>> shortest_path;
+vector<vector<int>> alternative_paths;
+string cities[16] = {"H","A","B","C","D","E","F","G", "I" , "J", "K", "L", "M", "N", "O", "P"};
 struct OrderList
 {
     string name;                         // Variable to store customer name
@@ -18,29 +23,12 @@ OrderList* first;
 OrderList* last;
 
 // Working functions
-void askForOrder()
+void askForOrder(OrderList *newOrder)
 {
     //Incase of empty nodes (No orders)
     if(first == NULL){
         int choice, option;
         bool flag = true;
-        OrderList *newOrder = new OrderList();
-        // Customer credentials
-        cout<<endl;
-        cout << "*********** Ask for Order ***********" << endl;
-        cout << "Enter the customer name: "
-            << " ";
-        cin >> newOrder->name;
-        cout << "Enter the customer address: "
-            << " ";
-        cin >> newOrder->address;
-        cout << "Enter the mobile number: "
-            << " ";
-        cin >> newOrder->phone;
-        cout << "Enter the email: "
-            << " ";
-        cin >> newOrder->email;
-        cout<<endl<<endl;
         
         cout << "************* Order Details: ****************\n";
 
@@ -724,6 +712,33 @@ void deliverOrders(){
         cout<<"Customer Address:       "<<temp->address<<endl;
         cout<<"Customer Phone:         "<<temp->phone<<endl;
         cout<<"Customer Email:         "<<temp->email<<endl;
+        cout<<"Shortest Path : ------------------------"<<endl;
+        for(int i=0; i<shortest_path.size(); i++){
+            for(int j=0; j<shortest_path[i].size(); j++){
+                if(j == shortest_path[i].size()-1){
+                    cout<<cities[shortest_path[i][j]]<<" ";
+                }
+                else{
+                    cout<<cities[shortest_path[i][j]]<<"-->";
+                }
+            }
+            cout<<endl;
+        }
+
+        cout<<"\nAlternative Paths : ------------------------"<<endl;
+        for(int i=0; i<alternative_paths.size(); i++){
+            for(int j=0; j<alternative_paths[i].size(); j++){
+                if(j == alternative_paths[i].size()-1){
+                    cout<<cities[alternative_paths[i][j]]<<" ";
+                }
+                else{
+                    cout<<cities[alternative_paths[i][j]]<<"-->";
+                }
+            }
+            cout<<endl;
+        }
+
+
         while (count < 4)
         {
             for (int i = 0; i <= 4; i++)
@@ -767,7 +782,6 @@ string dest;
 vector<int>gph[16];
 int graph[16][16];
 int graphtime[16][16];
-string cities[16] = {"H","A","B","C","D","E","F","G", "I" , "J", "K", "L", "M", "N", "O", "P"};
 int visited[16];
 int parent[16];
 int source;
@@ -796,97 +810,6 @@ void display(){
 	}
 	cout<<"-----------------\n";	
 }
-//===========================================STACK CLASS==================================================================
-class sta{
-	public:
-		int size, top;
-		string *s;
-	sta(){
-		size=10;
-		s=new string[size];
-		top=-1;
-	}
-
-	void push(string x){
-		s[++top]=x;						
-	}		
-	string pop(){
-		string x = s[top--];
-		return x;
-	}
-	bool isEmpty(){
-		if(top==-1)
-			return true;
-		else
-			return false;
-	}
-	void display(){
-		for(int i=top; i>=0; i--){
-				cout<<"\n"<<s[i];
-		}
-		cout<<"\n";
-	}
-};
-//=====================================DIJKSTRA ALGORITHM===========================================================
-
-// finds and displays the shortest route to each city from the source
-
-void displayShortestPath(int distance[], int parent[],int source, string unit){
-	cout<<"\n--------------------Shortest Routes to All Cities---------------------\n\n";
-	int j;
-	sta s1;									// Stack is used in printing of path in Dijkstra's Algorithm
-	for(int i=0;i<16;i++){
-		if(i!=source){
-			s1.push(cities[i]);
-			j=i;
-			do{
-				j=parent[j];
-				s1.push(cities[j]);
-			}while(j!=source);
-		}
-		while(!s1.isEmpty()){
-			cout<<s1.pop()<<" --> ";
-		}		
-		if (i!=source){
-			cout<<distance[i]<<" "<<unit<<"\n\n";	
-		}
-	}
-	cout<<"\n------------------------------------------------------------------------\n";
-}
-
-int minDistance(int distance[], int visited[]){
-	int min = INF; 									// Finds the vertex with minimum distance from all those vertices which are unvisited
-	int minIndex;
-	for (int i = 0; i < 16; i++)
-		if (visited[i] == false && distance[i] <= min){
-			min = distance[i], minIndex = i;
-		}
-	return minIndex;
-}
-
-void dijkstrasAlgorithm(int graph[][16],int distance[], int visited[], int parent[],int source,string unit){
-
-	for(int i = 0; i < 16; i++){
-		distance[i] = INF;
-		visited[i] = 0;
-		parent[i] = -1;
-	}
-	distance[source] = 0;
-
-	for (int i = 0; i < 6; i++) {
-		int u = minDistance(distance, visited);		
-		visited[u] = 1;
-		for (int i = 0; i < 16; i++){
-			if (visited[i] == 0 && graph[u][i]){
-				if (distance[u] + graph[u][i] < distance[i]){
-					distance[i] = distance[u] + graph[u][i];	
-					parent[i] = u;
-				}
-			}
-		}
-	}
-	displayShortestPath(distance,parent,source,unit);
-}
 
 
 //======================================ALL EDGES============================================================
@@ -902,6 +825,7 @@ void printpath(vector<int>path) //Print Edges
         }  
     cout << "\n\n";
 }
+
 int isNotVisited(int x, vector<int> path) //Checking if Vertices are visited or not 
 {
     int size = path.size();
@@ -911,9 +835,9 @@ int isNotVisited(int x, vector<int> path) //Checking if Vertices are visited or 
     return 1;
 }
 
-void findpaths(vector<int>g[], int source,int destination, int v) //Through BFS
+void findpaths(vector<int> g[], int source, int destination, int v) //Through BFS
 {
-    queue<vector<int> > q;
+    queue<vector<int>> q;
     vector<int> path;
     path.push_back(source);
     q.push(path);
@@ -921,8 +845,22 @@ void findpaths(vector<int>g[], int source,int destination, int v) //Through BFS
         path = q.front();
         q.pop();
         int last = path[path.size() - 1];
+        
         if (last == destination)
-            printpath(path);       
+            if(alternatePaths >= 0){
+                // cout<<"hello";
+                printpath(path);
+                if(shortest_path.empty()){
+                    shortest_path.push_back(path);
+                }
+                else{
+                    alternative_paths.push_back(path);
+                }
+                alternatePaths--;
+            }
+            else{
+                return;
+            }      
 
         for (int i = 0; i < g[last].size(); i++) {
             if (isNotVisited(g[last][i], path)) {
@@ -935,88 +873,41 @@ void findpaths(vector<int>g[], int source,int destination, int v) //Through BFS
 }
 //-----------------------------------------------------------------------------
 
-
-
 int main()
 {   
-    bool flag = true;
-    while (flag){
-        int option;
-        cout << "*********** Favourite Panda ***********" << endl;
-        cout << "Enter 1 to order food: "<<endl;
-        cout << "Enter 2 to deliver food: "<<endl;
-        cout << "Enter 3 to exit: "<<endl;
-        cout<<"*****************************************"<<endl;
-
-        cout << "Enter your choice: ";
-        cin>>option;
-
-        if(option == 1){
-            askForOrder();
-        }
-        else if(option == 2){
-            deliverOrders();
-        }
-        else if(option == 3){
-            flag = false;
-        }
-        else{
-            cout<<"Invalid Input!!"<<endl;
-        }
-    }
-
+    
+    
     //Calling code for graphs
     int distance[16];
 
-
-//-----------GRAPH DISTANCE----------
+    //Adding nodes distance with other nodes
 	addEdgeDistance(1,2,5);
-        addEdgeDistance(1,3,5);
-        addEdgeDistance(2,3,4);
-        addEdgeDistance(2,4,3);
-        addEdgeDistance(3,4,7);
-        addEdgeDistance(3,5,7);	
-        addEdgeDistance(3,8,8);	
-        addEdgeDistance(4,8,11);
-        addEdgeDistance(4,13,14);
-        addEdgeDistance(4,12,13);
-        addEdgeDistance(5,6,4);
-        addEdgeDistance(5,8,5);
-        addEdgeDistance(6,7,9);
-        addEdgeDistance(7,14,12);
-        addEdgeDistance(8,9,3);
-        addEdgeDistance(9,10,4);
-        addEdgeDistance(10,16,8);
-        addEdgeDistance(10,14,3);
-        addEdgeDistance(11,14,7);
-        addEdgeDistance(11,16,4);
-        addEdgeDistance(11,12,5);
-        addEdgeDistance(12,13,9);
-        addEdgeDistance(12,15,4);
-        addEdgeDistance(13,15,5);
-        addEdgeDistance(13,16,7);
-	//-----------GRAPH TIME----------
-	// addEdgeTime(0,1,3);
-	// addEdgeTime(0,2,4);
-	// addEdgeTime(0,3,8);
-	// addEdgeTime(1,4,16);
-	// addEdgeTime(2,3,2);
-	// addEdgeTime(2,4,2);	
-	// addEdgeTime(2,5,3);	
-	// addEdgeTime(3,5,5);
-	// addEdgeTime(6,4,16);
-	// addEdgeTime(6,5,1);	
-//-----------GRAPH FOR EDGES----------
-	// add_edge(gph,0,1);
-    // add_edge(gph,0,2);
-	// add_edge(gph,0,3);
-	// add_edge(gph,1,4);
-	// add_edge(gph,2,3);	
-	// add_edge(gph,2,4);	
-	// add_edge(gph,2,5);	
-	// add_edge(gph,3,5);
-	// add_edge(gph,4,6);
-	// add_edge(gph,5,6);
+    addEdgeDistance(1,3,5);
+    addEdgeDistance(2,3,4);
+    addEdgeDistance(2,4,3);
+    addEdgeDistance(3,4,7);
+    addEdgeDistance(3,5,7);	
+    addEdgeDistance(3,8,8);	
+    addEdgeDistance(4,8,11);
+    addEdgeDistance(4,13,14);
+    addEdgeDistance(4,12,13);
+    addEdgeDistance(5,6,4);
+    addEdgeDistance(5,8,5);
+    addEdgeDistance(6,7,9);
+    addEdgeDistance(7,14,12);
+    addEdgeDistance(8,9,3);
+    addEdgeDistance(9,10,4);
+    addEdgeDistance(10,16,8);
+    addEdgeDistance(10,14,3);
+    addEdgeDistance(11,14,7);
+    addEdgeDistance(11,16,4);
+    addEdgeDistance(11,12,5);
+    addEdgeDistance(12,13,9);
+    addEdgeDistance(12,15,4);
+    addEdgeDistance(13,15,5);
+    addEdgeDistance(13,16,7);
+	
+    //Adding graph edges
 	add_edge(gph,0,5);
 	add_edge(gph,0,4);
 	add_edge(gph,0,3);
@@ -1045,10 +936,6 @@ int main()
 	add_edge(gph,12,13);
 	add_edge(gph,13,15);
 
-
-    // dijkstrasAlgorithm(graph,distance,visited,parent,source,"km");
-    cout<<endl;
-
     dest = "A";
 	int j;
 	for (j=0;j<16;j++){
@@ -1056,8 +943,65 @@ int main()
 			break;
 		}
 	}
-	cout << "Path from source " << cities[source]
-    << " to destination " << dest<< " are \n";
-    findpaths(gph,source,j,16);
+	    
 
+    bool flag = true;
+    int destIndex;
+    while (flag){
+        int option;
+        cout << "*********** Favourite Panda ***********" << endl;
+        cout << "Enter 1 to order food: "<<endl;
+        cout << "Enter 2 to deliver food: "<<endl;
+        cout << "Enter 3 to exit: "<<endl;
+        cout<<"*****************************************"<<endl;
+
+        cout << "Enter your choice: ";
+        cin>>option;
+
+        OrderList *newOrder = new OrderList();
+        if(option == 1){
+            // Customer credentials
+            cout<<endl;
+            cout << "*********** Ask for Order ***********" << endl;
+            cout << "Enter the customer name: "
+                << " ";
+            cin >> newOrder->name;
+            cout << "Enter the customer address: "
+                << " ";
+            cin >> newOrder->address;
+            cout << "Enter the mobile number: "
+                << " ";
+            cin >> newOrder->phone;
+            cout << "Enter the email: "
+                << " ";
+            cin >> newOrder->email;
+            cout << "Enter your destination: "<<endl;
+            cout << "1. For A  | 2. For B "<<endl;
+            cout << "3. For C  | 4. For D"<<endl;
+            cout << "5. For E  | 6. For F"<<endl;
+            cout << "7. For G  | 8. For I"<<endl;
+            cout << "9. For J  | 10. For K"<<endl;
+            cout << "11. For L | 12. For M"<<endl;
+            cout << "13. For N | 14. For O"<<endl;
+            cout << "15. For P | Your choice: ";
+            cin >> destIndex;
+            cout<<endl<<endl;
+            
+
+            askForOrder(newOrder);
+        }
+        else if(option == 2){
+            findpaths(gph,source,destIndex,16);
+            deliverOrders();
+        }
+        else if(option == 3){
+            flag = false;
+        }
+        else{
+            cout<<"Invalid Input!!"<<endl;
+        }
+    }
+
+
+    cout<<endl;
 }
