@@ -3,11 +3,15 @@
 #include<vector>
 using namespace std;
 
+//Variables to store number of alternative paths
 int alternatePaths=2;
-// string shortestPath;
+int N = 2;
+
+//Variables to store number of alternative and shortest paths
 vector<vector<int>> shortest_path;
 vector<vector<int>> alternative_paths;
-string cities[16] = {"H","A","B","C","D","E","F","G", "I" , "J", "K", "L", "M", "N", "O", "P"};
+
+string branches[16] = {"H","A","B","C","D","E","F","G", "I" , "J", "K", "L", "M", "N", "O", "P"};
 struct OrderList
 {
     string name;                         // Variable to store customer name
@@ -40,7 +44,7 @@ void askForOrder(OrderList *newOrder)
             cout << "2 for Thai: \n";
             cout << "3 for Italian: \n";
             cout << "4 for Indian: \n";
-            cout << "5 to go back: \n";
+            cout << "5 to go back to main menu: \n";
             cout << "Enter your choice: ";
             cin >> choice;
             cout<<endl;
@@ -361,22 +365,7 @@ void askForOrder(OrderList *newOrder)
             cout<<endl;
             int choice, option;
             bool flag = true;
-            OrderList *newOrder = new OrderList();
-            // Customer credentials
-            cout << "*********** Ask for Order ***********" << endl;
-            cout << "Enter the customer name: "
-                << " ";
-            cin >> newOrder->name;
-            cout << "Enter the customer address: "
-                << " ";
-            cin >> newOrder->address;
-            cout << "Enter the mobile number: "
-                << " ";
-            cin >> newOrder->phone;
-            cout << "Enter the email: "
-            << " ";
-            cin >> newOrder->email;
-            cout<<endl<<endl;
+
             cout << "************* Order Details: ****************\n";
 
             while (flag)
@@ -702,7 +691,8 @@ void askForOrder(OrderList *newOrder)
 //Delivering orders of customers
 void deliverOrders(){
     OrderList* temp = first;
-    int min=9999;
+    int min=999, minIndex = 999;
+    string userOrder = "";
     int count = 0;
 
     if(temp != NULL){
@@ -712,54 +702,59 @@ void deliverOrders(){
         cout<<"Customer Address:       "<<temp->address<<endl;
         cout<<"Customer Phone:         "<<temp->phone<<endl;
         cout<<"Customer Email:         "<<temp->email<<endl;
-        cout<<"Shortest Path : ------------------------"<<endl;
-        for(int i=0; i<shortest_path.size(); i++){
-            for(int j=0; j<shortest_path[i].size(); j++){
-                if(j == shortest_path[i].size()-1){
-                    cout<<cities[shortest_path[i][j]]<<" ";
-                }
-                else{
-                    cout<<cities[shortest_path[i][j]]<<"-->";
-                }
-            }
-            cout<<endl;
-        }
 
-        cout<<"\nAlternative Paths : ------------------------"<<endl;
-        for(int i=0; i<alternative_paths.size(); i++){
-            for(int j=0; j<alternative_paths[i].size(); j++){
-                if(j == alternative_paths[i].size()-1){
-                    cout<<cities[alternative_paths[i][j]]<<" ";
-                }
-                else{
-                    cout<<cities[alternative_paths[i][j]]<<"-->";
-                }
-            }
-            cout<<endl;
-        }
-
-
-        while (count < 4)
+        while (count < 5)
         {
             for (int i = 0; i <= 4; i++)
             {   
                 //Calculating minimum order time and delivering this order on first priority
-                if(temp->orderTime[i] < min){
-                    min = i;
-                }
+					if(temp->orderTime[i] < min ){
+						min = temp->orderTime[i];
+						userOrder = temp->orders[i];
+						minIndex = i;
+					}
             }
             //Delivering order with highest priority (i.e, minimum time taken)
-            if(temp->orders[min] != ""){
-                cout<<"Customer Order:         "<<temp->orders[min]<<endl;
-                cout<<"Order Time Taken:       "<<temp->orderTime[min]<<endl;
-
-                //After printing deleting min value
-                temp->orders[min] = "";
-                temp->orderTime[min] = 9999;
-            }
-            count++;
-            
+            cout<<"Customer Order:         "<<userOrder<<endl;
+            cout<<"Order Time Taken:       "<<min<<endl;
+                           
+            //After printing deleting min value
+            // temp->orders[min] = "";
+            temp->orderTime[minIndex] = 35;
+            min = 999;
+            userOrder = "";
+            minIndex = 999;
+            count++;           
         }
+
+        //Code to print shortest path of the graph
+        cout<<"Shortest Path : ------------------------------"<<endl;
+        for(int i=0; i<shortest_path.size(); i++){
+            for(int j=0; j<shortest_path[i].size(); j++){
+                if(j == shortest_path[i].size()-1){
+                    cout<<branches[shortest_path[i][j]]<<" ";
+                }
+                else{
+                    cout<<branches[shortest_path[i][j]]<<"-->";
+                }
+            }
+            cout<<endl;
+        }
+
+        //Code to print alternative paths of the graph
+        cout<<"\nAlternative Paths : --------------------------"<<endl;
+        for(int i=0; i<alternative_paths.size(); i++){
+            for(int j=0; j<alternative_paths[i].size(); j++){
+                if(j == alternative_paths[i].size()-1){
+                    cout<<branches[alternative_paths[i][j]]<<" ";
+                }
+                else{
+                    cout<<branches[alternative_paths[i][j]]<<"-->";
+                }
+            }
+            cout<<endl;
+        }
+
                 
         cout<<endl<<"----------------------------------------------"<<endl;
         //Deleting the delivered order from order list (Deleting Node From Start)
@@ -785,7 +780,7 @@ int graphtime[16][16];
 int visited[16];
 int parent[16];
 int source;
-string start =cities[source];
+string start =branches[source];
 //================================BASIC IMPLEMENTATION OF GRAPHS==================================================
 void add_edge(vector<int>gph[],int u,int v){
     gph[u].push_back(v);
@@ -799,17 +794,6 @@ void addEdgeTime(int v1, int v2, int w){
 		graphtime[v1][v2] = w;
 		graphtime[v2][v1] = w;				
 }
-void display(){
-	cout<<"\n------GRAPH------\n";
-	for (int i= 0; i<16; i++){
-		cout<<"  ";
-		for (int j=0; j<16;j++){
-				cout<<graph[i][j]<<" ";	
-		}
-		cout<<"\n";	
-	}
-	cout<<"-----------------\n";	
-}
 
 
 //======================================ALL EDGES============================================================
@@ -818,10 +802,10 @@ void printpath(vector<int>path) //Print Edges
     int size = path.size();
     for (int i = 0; i < size; i++)
          if(i==size-1){
-            cout << cities[path[i]] <<" ";
+            cout << branches[path[i]] <<" ";
         }   
         else{
-            cout << cities[path[i]] <<"--->";
+            cout << branches[path[i]] <<"--->";
         }  
     cout << "\n\n";
 }
@@ -871,12 +855,10 @@ void findpaths(vector<int> g[], int source, int destination, int v) //Through BF
         }
     }
 }
-//-----------------------------------------------------------------------------
+
 
 int main()
 {   
-    
-    
     //Calling code for graphs
     int distance[16];
 
@@ -936,19 +918,13 @@ int main()
 	add_edge(gph,12,13);
 	add_edge(gph,13,15);
 
-    dest = "A";
-	int j;
-	for (j=0;j<16;j++){
-		if ((cities[j]).compare(dest)==0){
-			break;
-		}
-	}
 	    
 
     bool flag = true;
-    int destIndex;
+    vector<int> destIndex;
     while (flag){
         int option;
+        cout<<endl;
         cout << "*********** Favourite Panda ***********" << endl;
         cout << "Enter 1 to order food: "<<endl;
         cout << "Enter 2 to deliver food: "<<endl;
@@ -976,25 +952,33 @@ int main()
                 << " ";
             cin >> newOrder->email;
             cout << "Enter your destination: "<<endl;
-            cout << "1. For A  | 2. For B "<<endl;
-            cout << "3. For C  | 4. For D"<<endl;
-            cout << "5. For E  | 6. For F"<<endl;
-            cout << "7. For G  | 8. For I"<<endl;
-            cout << "9. For J  | 10. For K"<<endl;
-            cout << "11. For L | 12. For M"<<endl;
-            cout << "13. For N | 14. For O"<<endl;
-            cout << "15. For P | Your choice: ";
-            cin >> destIndex;
+            cout << "1. For A   |  2. For B "<<endl;
+            cout << "3. For C   |  4. For D"<<endl;
+            cout << "5. For E   |  6. For F"<<endl;
+            cout << "7. For G   |  8. For I"<<endl;
+            cout << "9. For J   |  10. For K"<<endl;
+            cout << "11. For L  |  12. For M"<<endl;
+            cout << "13. For N  |  14. For O"<<endl;
+            cout << "15. For P  | Your choice: ";
+            int a;
+            cin >> a;
+            destIndex.push_back(a);
             cout<<endl<<endl;
             
 
             askForOrder(newOrder);
         }
         else if(option == 2){
-            findpaths(gph,source,destIndex,16);
+            shortest_path.clear();
+            alternative_paths.clear();
+            findpaths(gph,source,destIndex[0],16);
+            destIndex.erase(destIndex.begin());
             deliverOrders();
+            alternatePaths = N;
+            
         }
         else if(option == 3){
+            cout<<"Thank you for using FavouritePanda!! Have a great day!!!"<<endl;
             flag = false;
         }
         else{
